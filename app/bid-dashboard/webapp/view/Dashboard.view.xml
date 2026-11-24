@@ -1,0 +1,181 @@
+<mvc:View
+  controllerName="bid.pilot.dashboard.view.Dashboard"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:f="sap.f"
+  xmlns:l="sap.ui.layout"
+  xmlns:cssgrid="sap.ui.layout.cssgrid"
+  xmlns:core="sap.ui.core"
+  xmlns:card="sap.f.cards"
+  displayBlock="true">
+
+  <Page title="BidPilot — Bid Lifecycle Dashboard" class="dashPage"
+      showNavButton="false">
+
+      <customHeader>
+        <Bar class="dashHeader">
+          <contentLeft>
+            <HBox alignItems="Center">
+              <Image src="img/sap-logo.svg" width="auto" height="32px" alt="SAP" class="sapLogoImg" densityAware="false"/>
+              <Title text="BidPilot" class="dashTitle" level="H3"/>
+              <Text text=" — Bid Lifecycle Dashboard" class="dashSubtitle"/>
+            </HBox>
+          </contentLeft>
+          <contentRight>
+            <Button icon="sap-icon://refresh" press=".onRefresh" tooltip="Refresh" type="Transparent"/>
+            <Button icon="sap-icon://ai" text="Open Joule" press=".onOpenJoule" type="Ghost" class="jouleBtn"/>
+          </contentRight>
+        </Bar>
+      </customHeader>
+
+      <content>
+        <l:VerticalLayout width="100%" class="dashBody">
+
+          <!-- ── KPI Tiles ──────────────────────────────────── -->
+          <f:GridList id="kpiGrid" class="kpiGrid" noDataText="Loading..." growing="false">
+            <f:customLayout>
+              <cssgrid:GridBasicLayout gridTemplateColumns="repeat(auto-fill, minmax(180px, 1fr))" gridGap="1rem"/>
+            </f:customLayout>
+            <f:items>
+              <f:GridListItem id="kpiAll" class="kpiTile kpiTotal" press=".onKpiPress" type="Active">
+                <VBox class="kpiContent" alignItems="Center" justifyContent="Center">
+                  <Text text="{stats>/total}" class="kpiNum"/>
+                  <Text text="Total Bids" class="kpiLabel"/>
+                  <core:Icon src="sap-icon://document-text" class="kpiIcon"/>
+                </VBox>
+              </f:GridListItem>
+              <f:GridListItem id="kpiReceived" class="kpiTile kpiReceived" press=".onKpiPress" type="Active">
+                <VBox class="kpiContent" alignItems="Center" justifyContent="Center">
+                  <Text text="{stats>/received}" class="kpiNum"/>
+                  <Text text="Received" class="kpiLabel"/>
+                  <core:Icon src="sap-icon://inbox" class="kpiIcon"/>
+                </VBox>
+              </f:GridListItem>
+              <f:GridListItem id="kpiProgress" class="kpiTile kpiProgress" press=".onKpiPress" type="Active">
+                <VBox class="kpiContent" alignItems="Center" justifyContent="Center">
+                  <Text text="{stats>/inProgress}" class="kpiNum kpiNumWarning"/>
+                  <Text text="In Progress" class="kpiLabel"/>
+                  <core:Icon src="sap-icon://process" class="kpiIcon"/>
+                </VBox>
+              </f:GridListItem>
+              <f:GridListItem id="kpiReview" class="kpiTile kpiReview" press=".onKpiPress" type="Active">
+                <VBox class="kpiContent" alignItems="Center" justifyContent="Center">
+                  <Text text="{stats>/deptReview}" class="kpiNum kpiNumInfo"/>
+                  <Text text="Dept Review" class="kpiLabel"/>
+                  <core:Icon src="sap-icon://approval" class="kpiIcon"/>
+                </VBox>
+              </f:GridListItem>
+              <f:GridListItem id="kpiDone" class="kpiTile kpiDone" press=".onKpiPress" type="Active">
+                <VBox class="kpiContent" alignItems="Center" justifyContent="Center">
+                  <Text text="{stats>/submitted}" class="kpiNum kpiNumSuccess"/>
+                  <Text text="Submitted" class="kpiLabel"/>
+                  <core:Icon src="sap-icon://complete" class="kpiIcon"/>
+                </VBox>
+              </f:GridListItem>
+              <f:GridListItem id="kpiPublishedTile" class="kpiTile kpiPublished" press=".onKpiPress" type="Active">
+                <VBox class="kpiContent" alignItems="Center" justifyContent="Center">
+                  <Text text="{stats>/published}" class="kpiNum kpiNumPublished"/>
+                  <Text text="Published" class="kpiLabel"/>
+                  <core:Icon src="sap-icon://world" class="kpiIcon"/>
+                </VBox>
+              </f:GridListItem>
+            </f:items>
+          </f:GridList>
+
+          <!-- ── Status Filter Bar ──────────────────────────── -->
+          <HBox class="filterBar" alignItems="Center">
+            <Label text="Filter:" class="filterLabel"/>
+            <SegmentedButton id="statusFilter" selectionChange=".onStatusFilter" selectedKey="all" class="statusFilter">
+              <items>
+                <SegmentedButtonItem text="All" key="all"/>
+                <SegmentedButtonItem text="Received" key="received"/>
+                <SegmentedButtonItem text="In Progress" key="ai_processing"/>
+                <SegmentedButtonItem text="Pending Match" key="pending_match"/>
+                <SegmentedButtonItem text="Dept Review" key="dept_review"/>
+                <SegmentedButtonItem text="Final Review" key="final_review"/>
+                <SegmentedButtonItem text="Submitted" key="submitted"/>
+                <SegmentedButtonItem text="Published" key="published"/>
+              </items>
+            </SegmentedButton>
+            <SearchField id="searchField" width="18rem" search=".onSearch" placeholder="Search bids..." class="searchBox"/>
+          </HBox>
+
+          <!-- ── Bid Cards Grid ─────────────────────────────── -->
+          <f:GridList id="bidGrid" items="{bids>/items}" class="bidGrid"
+            noDataText="No bids found."
+            growing="true" growingThreshold="12">
+            <f:customLayout>
+              <cssgrid:GridBasicLayout gridTemplateColumns="repeat(auto-fill, minmax(300px, 1fr))" gridGap="1rem"/>
+            </f:customLayout>
+            <f:items>
+              <f:GridListItem type="Active" press=".onBidCardPress" class="bidCard">
+                <VBox class="bidCardBody">
+                  <!-- Card header -->
+                  <HBox justifyContent="SpaceBetween" alignItems="Start" class="cardHeader">
+                    <VBox>
+                      <ObjectIdentifier title="{bids>bidNumber}" text="{bids>customerName}" class="cardId"/>
+                    </VBox>
+                    <ObjectStatus
+                      text="{bids>status}"
+                      state="{= ${bids>status} === 'published' ? 'Success'
+                               : ${bids>status} === 'submitted' ? 'Success'
+                               : ${bids>status} === 'pending_match' || ${bids>status} === 'final_review' ? 'Warning'
+                               : ${bids>status} === 'dept_review' ? 'Information'
+                               : ${bids>status} === 'no_match_rd' ? 'Error'
+                               : 'None'}"
+                      inverted="true"
+                      class="statusBadge"/>
+                  </HBox>
+
+                  <!-- Product family -->
+                  <HBox alignItems="Center" class="cardMeta">
+                    <core:Icon src="sap-icon://product" class="metaIcon"/>
+                    <Text text="{bids>productFamily}" class="metaText"/>
+                  </HBox>
+
+                  <!-- AI match score -->
+                  <HBox alignItems="Center" class="cardMeta" visible="{= ${bids>aiMatchScore} > 0}">
+                    <core:Icon src="sap-icon://ai" class="metaIcon"/>
+                    <Text text="AI Match: " class="metaLabel"/>
+                    <ObjectNumber number="{bids>aiMatchScore}" unit="%" emphasized="false"
+                      state="{= ${bids>aiMatchScore} >= 80 ? 'Success' : 'Warning'}" class="matchScore"/>
+                  </HBox>
+
+                  <!-- Progress stepper -->
+                  <HBox class="progressStepper" alignItems="Center">
+                    <VBox class="{= ${bids>status} === 'received' || ${bids>status} === 'ai_processing' ? 'stepActive' : 'stepDone'}" alignItems="Center">
+                      <Text text="1" class="stepNum"/><Text text="Intake" class="stepLabel"/>
+                    </VBox>
+                    <Text text="›" class="stepArrow"/>
+                    <VBox class="{= ${bids>status} === 'pending_match' || ${bids>status} === 'draft_document' ? 'stepActive' : ${bids>status} === 'dept_review' || ${bids>status} === 'pending_corrections' || ${bids>status} === 'final_review' || ${bids>status} === 'submitted' || ${bids>status} === 'published' ? 'stepDone' : 'stepFuture'}" alignItems="Center">
+                      <Text text="2" class="stepNum"/><Text text="Match" class="stepLabel"/>
+                    </VBox>
+                    <Text text="›" class="stepArrow"/>
+                    <VBox class="{= ${bids>status} === 'dept_review' || ${bids>status} === 'pending_corrections' ? 'stepActive' : ${bids>status} === 'final_review' || ${bids>status} === 'submitted' || ${bids>status} === 'published' ? 'stepDone' : 'stepFuture'}" alignItems="Center">
+                      <Text text="3" class="stepNum"/><Text text="Review" class="stepLabel"/>
+                    </VBox>
+                    <Text text="›" class="stepArrow"/>
+                    <VBox class="{= ${bids>status} === 'final_review' ? 'stepActive' : ${bids>status} === 'submitted' || ${bids>status} === 'published' ? 'stepDone' : 'stepFuture'}" alignItems="Center">
+                      <Text text="4" class="stepNum"/><Text text="Submit" class="stepLabel"/>
+                    </VBox>
+                    <Text text="›" class="stepArrow"/>
+                    <VBox class="{= ${bids>status} === 'published' ? 'stepDone stepPublished' : 'stepFuture'}" alignItems="Center">
+                      <Text text="5" class="stepNum"/><Text text="Publish" class="stepLabel"/>
+                    </VBox>
+                  </HBox>
+
+                  <!-- Submitter & date -->
+                  <HBox justifyContent="SpaceBetween" class="cardFooter">
+                    <Text text="{bids>submittedBy}" class="cardDate"/>
+                    <Text text="{bids>createdAt}" class="cardDate"/>
+                  </HBox>
+                </VBox>
+              </f:GridListItem>
+            </f:items>
+          </f:GridList>
+
+        </l:VerticalLayout>
+      </content>
+    </Page>
+
+</mvc:View>

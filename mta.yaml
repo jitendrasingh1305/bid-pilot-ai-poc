@@ -1,0 +1,100 @@
+_schema-version: '3.1'
+ID: bid-pilot-poc
+version: 1.0.0
+description: "BidPilot — AI-Assisted Bid Lifecycle Management POC on SAP BTP"
+
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci --production
+        - npx cds build --production
+
+modules:
+
+  # ── CAP backend service ──────────────────────────────────────────────────
+  - name: bid-pilot-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      buildpack: nodejs_buildpack
+      memory: 256M
+      disk-quota: 512M
+    build-parameters:
+      builder: npm
+      ignore: [node_modules/]
+    requires:
+      - name: bid-pilot-auth
+      - name: bid-pilot-db
+      - name: bid-pilot-ans
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: '${default-url}'
+    properties:
+      ANS_URL: '~{bid-pilot-ans/url}'
+      ANS_CLIENT_ID: '~{bid-pilot-ans/client_id}'
+      ANS_CLIENT_SECRET: '~{bid-pilot-ans/client_secret}'
+      ANS_TOKEN_URL: '~{bid-pilot-ans/token_url}'
+
+  # ── HANA DB deployer ────────────────────────────────────────────────────
+  - name: bid-pilot-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+      memory: 256M
+      disk-quota: 512M
+    requires:
+      - name: bid-pilot-db
+
+  # ── Approuter ────────────────────────────────────────────────────────────
+  - name: bid-pilot-router
+    type: approuter.nodejs
+    path: app/router
+    parameters:
+      memory: 128M
+      disk-quota: 256M
+      keep-existing-routes: true
+    requires:
+      - name: srv-api
+        group: destinations
+        properties:
+          name: srv-api
+          url: '~{srv-url}'
+          forwardAuthToken: true
+      - name: bid-pilot-auth
+    properties:
+      SEND_XFRAMEOPTIONS: false
+
+resources:
+
+  # ── XSUAA ────────────────────────────────────────────────────────────────
+  - name: bid-pilot-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: bid-pilot-poc-${space}
+        tenant-mode: dedicated
+
+  # ── HANA Cloud HDI container ─────────────────────────────────────────────
+  - name: bid-pilot-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+
+  # ── BTP Alert Notification Service ───────────────────────────────────────
+  - name: bid-pilot-ans
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: alert-notification
+      service-plan: standard
+    properties:
+      url:           '${vcap-services.alert-notification[0].credentials.url}'
+      client_id:     '${vcap-services.alert-notification[0].credentials.client_id}'
+      client_secret: '${vcap-services.alert-notification[0].credentials.client_secret}'
+      token_url:     '${vcap-services.alert-notification[0].credentials.oauth_url}'

@@ -1,0 +1,114 @@
+<mvc:View
+  controllerName="bid.pilot.joule.view.Main"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:f="sap.f"
+  xmlns:l="sap.ui.layout"
+  xmlns:core="sap.ui.core"
+  displayBlock="true">
+
+  <Page showHeader="false" class="jouleShell">
+
+    <!-- ── Header bar ─────────────────────────────────────────── -->
+    <customHeader>
+      <Bar class="jouleHeader">
+        <contentLeft>
+          <HBox alignItems="Center">
+            <Image src="../css/joule-icon.svg" width="28px" height="28px" class="jouleLogoImg"/>
+            <Title text="BidPilot" class="jouleTitle" level="H3"/>
+            <ObjectStatus text="AI-Powered Bid Assistant" state="Information" class="jouleSubtitle" inverted="false"/>
+          </HBox>
+        </contentLeft>
+        <contentRight>
+          <Button icon="sap-icon://decline" tooltip="Close" press=".onClose" type="Transparent"/>
+        </contentRight>
+      </Bar>
+    </customHeader>
+
+    <!-- ── Main content ───────────────────────────────────────── -->
+    <content>
+      <l:VerticalLayout width="100%" class="jouleBody">
+
+        <!-- Chat scroll container -->
+        <ScrollContainer id="chatScroll" height="calc(100vh - 520px)" width="100%" vertical="true" horizontal="false">
+          <VBox id="chatMessages" class="chatBox">
+
+            <!-- Welcome message -->
+            <HBox class="botBubbleWrap" alignItems="End">
+              <VBox class="botAvatar"><Text text="J"/></VBox>
+              <VBox class="botBubble">
+                <FormattedText htmlText="&lt;b&gt;Hello! I'm BidPilot.&lt;/b&gt;&lt;br&gt;I help you create and manage bid proposals. Tell me about your customer's requirements, and I'll search for matching historical projects.&lt;br&gt;&lt;br&gt;You can also &lt;b&gt;view open bids&lt;/b&gt; below."/>
+              </VBox>
+            </HBox>
+
+          </VBox>
+        </ScrollContainer>
+
+        <!-- ── Open bids quick-list ────────────────────────────── -->
+        <Panel id="bidListPanel" class="bidListPanel" expanded="true" expandable="true" headerText="Open Bids">
+          <Table id="bidTable" items="{/BidRequests}" growing="true" growingThreshold="3" mode="SingleSelectMaster" selectionChange=".onBidSelected" class="bidTable" noDataText="No open bids found.">
+            <columns>
+              <Column width="10rem"><Text text="Bid No."/></Column>
+              <Column><Text text="Customer"/></Column>
+              <Column><Text text="Product Family"/></Column>
+              <Column width="11rem"><Text text="Status"/></Column>
+              <Column width="6rem"><Text text="Match"/></Column>
+            </columns>
+            <items>
+              <ColumnListItem>
+                <cells>
+                  <ObjectIdentifier title="{bidNumber}"/>
+                  <Text text="{customerName}"/>
+                  <Text text="{productFamily}"/>
+                  <ObjectStatus text="{= ${status}}" state="{= ${status} === 'submitted' ? 'Success' : ${status} === 'pending_match' ? 'Warning' : ${status} === 'dept_review' ? 'Information' : 'None'}"/>
+                  <ObjectNumber number="{aiMatchScore}" unit="%" state="{= ${aiMatchScore} >= 80 ? 'Success' : ${aiMatchScore} > 0 ? 'Warning' : 'None'}"/>
+                </cells>
+              </ColumnListItem>
+            </items>
+          </Table>
+        </Panel>
+
+      </l:VerticalLayout>
+    </content>
+
+    <!-- ── Input footer ───────────────────────────────────────── -->
+    <footer>
+      <Toolbar class="jouleFooter">
+
+        <!-- New bid form (collapsed initially) -->
+        <VBox id="newBidForm" visible="false" class="newBidForm" width="100%">
+          <Title text="New Bid Request" level="H5" class="formTitle"/>
+          <VBox class="formFields">
+            <Label text="Customer Name" required="true"/>
+            <Input id="customerName" placeholder="e.g. Mahindra Manufacturing" width="100%"/>
+            <Label text="Product Family" required="true"/>
+            <ComboBox id="productFamily" width="100%" items="{/HistoricalProjects}" selectedKey="">
+              <core:Item key="{productFamily}" text="{productFamily}"/>
+            </ComboBox>
+            <Label text="Requirement Description" required="true"/>
+            <TextArea id="requirementText" rows="5" growing="true" width="100%"
+              placeholder="Describe the customer's technical requirements, product specifications, delivery timeline..."/>
+            <Label text="Submitted By"/>
+            <Input id="submittedBy" placeholder="Your email" value="{/currentUser}"/>
+          </VBox>
+          <HBox class="formActions" justifyContent="End">
+            <Button text="Cancel" press=".onCancelNewBid" type="Transparent"/>
+            <Button text="Submit to AI" press=".onSubmitNewBid" type="Emphasized" icon="sap-icon://ai"/>
+          </HBox>
+        </VBox>
+
+        <!-- Chat input bar -->
+        <HBox id="chatInputRow" alignItems="Center" class="chatInputBar">
+          <TextArea id="chatInput" placeholder="Ask BidPilot anything, or type 'new bid' to start…"
+            rows="3" growing="false" width="calc(100vw - 280px)" class="chatTextArea"
+            submit=".onSendMessage"/>
+          <Button icon="sap-icon://paper-plane" text="Send" press=".onSendMessage" type="Emphasized" class="sendBtn"/>
+          <Button icon="sap-icon://add-document" text="New Bid" press=".onNewBid" type="Ghost" class="newBidBtn"/>
+        </HBox>
+
+      </Toolbar>
+    </footer>
+
+  </Page>
+
+</mvc:View>

@@ -1,0 +1,14 @@
+{
+  "xsappname": "bid-pilot-poc",
+  "tenant-mode": "dedicated",
+  "scopes": [
+    { "name": "$XSAPPNAME.Sales",      "description": "Sales user — can create and confirm bids" },
+    { "name": "$XSAPPNAME.Reviewer",   "description": "Department reviewer — can approve/reject sections" },
+    { "name": "$XSAPPNAME.Admin",      "description": "Administrator" }
+  ],
+  "role-templates": [
+    { "name": "Sales",    "description": "Sales role",    "scope-references": ["$XSAPPNAME.Sales"] },
+    { "name": "Reviewer", "description": "Reviewer role", "scope-references": ["$XSAPPNAME.Reviewer"] },
+    { "name": "Admin",    "description": "Admin role",    "scope-references": ["$XSAPPNAME.Admin", "$XSAPPNAME.Sales", "$XSAPPNAME.Reviewer"] }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "bid-pilot-router",
+  "version": "1.0.0",
+  "description": "Approuter for BidPilot POC",
+  "dependencies": {
+    "@sap/approuter": "^14"
+  },
+  "scripts": {
+    "start": "node node_modules/@sap/approuter/approuter.js"
+  }
+}

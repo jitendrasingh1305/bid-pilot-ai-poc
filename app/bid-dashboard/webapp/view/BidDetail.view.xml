@@ -1,0 +1,155 @@
+<mvc:View
+  controllerName="bid.pilot.dashboard.view.BidDetail"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:f="sap.f"
+  xmlns:l="sap.ui.layout"
+  xmlns:core="sap.ui.core"
+  displayBlock="true">
+
+  <Page id="detailPage" title="{detail>/bidNumber}" showNavButton="true" navButtonPress=".onNavBack" class="detailPage">
+
+    <customHeader>
+      <Bar class="dashHeader">
+        <contentLeft>
+          <Button icon="sap-icon://nav-back" press=".onNavBack" type="Transparent"/>
+          <Title text="{detail>/bidNumber} — {detail>/customerName}" level="H4"/>
+        </contentLeft>
+        <contentRight>
+          <ObjectStatus text="{detail>/status}"
+            state="{= ${detail>/status} === 'submitted' ? 'Success' : ${detail>/status} === 'dept_review' ? 'Information' : ${detail>/status} === 'pending_match' ? 'Warning' : 'None'}"
+            inverted="true"/>
+        </contentRight>
+      </Bar>
+    </customHeader>
+
+    <content>
+      <l:VerticalLayout width="100%" class="detailBody">
+
+        <!-- ── Overview panel ─────────────────────────────── -->
+        <Panel headerText="Bid Overview" class="detailPanel" expanded="true" expandable="true">
+          <l:Grid defaultSpan="L6 M6 S12" class="overviewGrid">
+            <l:content>
+              <VBox class="fieldGroup"><Label text="Customer"/><Text text="{detail>/customerName}" class="fieldValue"/></VBox>
+              <VBox class="fieldGroup"><Label text="Product Family"/><Text text="{detail>/productFamily}" class="fieldValue"/></VBox>
+              <VBox class="fieldGroup"><Label text="Submitted By"/><Text text="{detail>/submittedBy}" class="fieldValue"/></VBox>
+              <VBox class="fieldGroup"><Label text="AI Match Score"/><ObjectNumber number="{detail>/aiMatchScore}" unit="%" state="{= ${detail>/aiMatchScore} >= 80 ? 'Success' : ${detail>/aiMatchScore} > 0 ? 'Warning' : 'None'}"/></VBox>
+            </l:content>
+          </l:Grid>
+          <VBox class="reqTextBox">
+            <Label text="Customer Requirements"/>
+            <TextArea value="{detail>/requirementText}" editable="false" rows="4" width="100%" class="reqText"/>
+          </VBox>
+        </Panel>
+
+          <Panel headerText="Bid Lifecycle" class="detailPanel" expanded="true" expandable="true">
+          <HBox class="lifecycleBar" alignItems="Center" justifyContent="Center">
+            <VBox alignItems="Center" class="{= ${detail>/status} === 'received' ? 'lcStepActive' : 'lcStepDone'}">
+              <Text text="1" class="lcNum"/><Text text="Received" class="lcLabel"/>
+            </VBox><Text text="────" class="lcLine"/>
+            <VBox alignItems="Center" class="{= ${detail>/status} === 'ai_processing' ? 'lcStepActive' : ${detail>/status} === 'received' ? 'lcStepFuture' : 'lcStepDone'}">
+              <Text text="2" class="lcNum"/><Text text="AI Process" class="lcLabel"/>
+            </VBox><Text text="────" class="lcLine"/>
+            <VBox alignItems="Center" class="{= ${detail>/status} === 'pending_match' ? 'lcStepActive' : ${detail>/status} === 'received' || ${detail>/status} === 'ai_processing' ? 'lcStepFuture' : 'lcStepDone'}">
+              <Text text="3" class="lcNum"/><Text text="Match" class="lcLabel"/>
+            </VBox><Text text="────" class="lcLine"/>
+            <VBox alignItems="Center" class="{= ${detail>/status} === 'dept_review' || ${detail>/status} === 'pending_corrections' ? 'lcStepActive' : ${detail>/status} === 'final_review' || ${detail>/status} === 'submitted' || ${detail>/status} === 'published' ? 'lcStepDone' : 'lcStepFuture'}">
+              <Text text="4" class="lcNum"/><Text text="Dept Review" class="lcLabel"/>
+            </VBox><Text text="────" class="lcLine"/>
+            <VBox alignItems="Center" class="{= ${detail>/status} === 'final_review' ? 'lcStepActive' : ${detail>/status} === 'submitted' || ${detail>/status} === 'published' ? 'lcStepDone' : 'lcStepFuture'}">
+              <Text text="5" class="lcNum"/><Text text="Final" class="lcLabel"/>
+            </VBox><Text text="────" class="lcLine"/>
+            <VBox alignItems="Center" class="{= ${detail>/status} === 'submitted' ? 'lcStepActive' : ${detail>/status} === 'published' ? 'lcStepDone' : 'lcStepFuture'}">
+              <Text text="6" class="lcNum"/><Text text="Submitted" class="lcLabel"/>
+            </VBox><Text text="────" class="lcLine"/>
+            <VBox alignItems="Center" class="{= ${detail>/status} === 'published' ? 'lcStepDone lcStepPublished' : 'lcStepFuture'}">
+              <Text text="7" class="lcNum"/><Text text="Published" class="lcLabel"/>
+            </VBox>
+          </HBox>
+
+          <!-- Action buttons -->
+          <HBox class="actionBar" justifyContent="Center">
+            <Button text="Submit for AI" press=".onSubmitAI" type="Emphasized" icon="sap-icon://ai" visible="{= ${detail>/status} === 'received'}"/>
+            <Button text="Confirm Match" press=".onConfirmMatch" type="Emphasized" icon="sap-icon://accept" visible="{= ${detail>/status} === 'pending_match'}"/>
+            <Button text="Reject → R&amp;D" press=".onRejectMatch" type="Reject" icon="sap-icon://decline" visible="{= ${detail>/status} === 'pending_match'}"/>
+            <Button text="Submit Final Bid" press=".onSubmitFinal" type="Emphasized" icon="sap-icon://complete" visible="{= ${detail>/status} === 'final_review'}"/>
+          </HBox>
+        </Panel>
+
+        <!-- ── Dept review status ─────────────────────────── -->
+        <Panel headerText="Departmental Reviews" class="detailPanel" expanded="true" expandable="true"
+          visible="{= ${detail>/status} === 'dept_review' || ${detail>/status} === 'pending_corrections' || ${detail>/status} === 'final_review' || ${detail>/status} === 'submitted'}">
+          <List id="reviewList" items="{reviews>/}" noDataText="No reviews yet.">
+            <CustomListItem>
+              <HBox alignItems="Center" justifyContent="SpaceBetween" class="reviewRow">
+                <HBox alignItems="Center">
+                  <core:Icon src="{= ${reviews>department} === 'rd' ? 'sap-icon://lab' : ${reviews>department} === 'compliance' ? 'sap-icon://shield' : 'sap-icon://money-bills'}" class="deptIcon"/>
+                  <VBox>
+                    <Text text="{= ${reviews>department} === 'rd' ? 'R&amp;D — Technical Feasibility' : ${reviews>department} === 'compliance' ? 'Compliance — Regulatory Review' : 'Costing — Product Costing'}" class="deptName"/>
+                    <Text text="{reviews>comments}" class="deptComments"/>
+                  </VBox>
+                </HBox>
+                <VBox alignItems="End">
+                  <ObjectStatus text="{reviews>status}"
+                    state="{= ${reviews>status} === 'approved' ? 'Success' : ${reviews>status} === 'rejected' ? 'Error' : ${reviews>status} === 'in_review' ? 'Warning' : 'None'}"
+                    inverted="true"/>
+                  <HBox visible="{= ${reviews>status} === 'pending' || ${reviews>status} === 'in_review'}">
+                    <Button text="Approve" press=".onApproveSection" type="Accept" icon="sap-icon://accept" class="reviewBtn"/>
+                    <Button text="Reject" press=".onRejectSection" type="Reject" icon="sap-icon://decline" class="reviewBtn"/>
+                  </HBox>
+                </VBox>
+              </HBox>
+            </CustomListItem>
+          </List>
+        </Panel>
+
+        <!-- ── Bid document sections ──────────────────────── -->
+        <Panel headerText="Bid Document" class="detailPanel" expanded="false" expandable="true"
+          visible="{= !!${detail>/bidDocId}}">
+          <VBox class="docSection">
+            <Title text="Technical Feasibility" level="H5" class="secTitle"/>
+            <TextArea value="{detail>/technicalSection}" editable="false" rows="5" width="100%" growing="true" class="docText"/>
+          </VBox>
+          <VBox class="docSection">
+            <Title text="Compliance" level="H5" class="secTitle"/>
+            <TextArea value="{detail>/complianceSection}" editable="false" rows="5" width="100%" growing="true" class="docText"/>
+          </VBox>
+          <VBox class="docSection">
+            <Title text="Product Costing" level="H5" class="secTitle"/>
+            <TextArea value="{detail>/costingSection}" editable="false" rows="5" width="100%" growing="true" class="docText"/>
+            <HBox class="costRow" alignItems="Center">
+              <Label text="Estimated Cost:"/>
+              <ObjectNumber number="{detail>/estimatedCost}" unit="{detail>/currency}" emphasized="true" class="costNum"/>
+            </HBox>
+          </VBox>
+        </Panel>
+
+        <!-- ── Notifications log ─────────────────────────── -->
+        <Panel headerText="Notification History" class="detailPanel" expanded="false" expandable="true">
+          <Table id="notifTable" items="{notifs>/}" noDataText="No notifications yet." class="notifTable">
+            <columns>
+              <Column width="10rem"><Text text="Event"/></Column>
+              <Column><Text text="Subject"/></Column>
+              <Column width="10rem"><Text text="Recipient"/></Column>
+              <Column width="6rem"><Text text="Status"/></Column>
+              <Column width="10rem"><Text text="Sent At"/></Column>
+            </columns>
+            <items>
+              <ColumnListItem>
+                <cells>
+                  <Text text="{notifs>eventType}"/>
+                  <Text text="{notifs>subject}"/>
+                  <Text text="{notifs>recipient}"/>
+                  <ObjectStatus text="{notifs>status}" state="{= ${notifs>status} === 'sent' ? 'Success' : ${notifs>status} === 'failed' ? 'Error' : 'None'}"/>
+                  <Text text="{notifs>sentAt}"/>
+                </cells>
+              </ColumnListItem>
+            </items>
+          </Table>
+        </Panel>
+
+      </l:VerticalLayout>
+    </content>
+  </Page>
+
+</mvc:View>

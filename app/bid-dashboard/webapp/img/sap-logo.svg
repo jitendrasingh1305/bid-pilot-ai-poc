@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 72" width="130" height="72">
+  <!-- Medium blue base rectangle -->
+  <rect width="130" height="72" fill="#0F6DC4"/>
+  <!-- Bright light-blue triangle — upper-right, diagonal from ~55% top to ~72% down right edge -->
+  <polygon points="56,0 130,0 130,50" fill="#4EC8EE"/>
+  <!-- White SAP text -->
+  <text
+    fill="white"
+    font-family="'Arial Black','Arial',Helvetica,sans-serif"
+    font-weight="900"
+    font-size="42"
+    letter-spacing="-1"
+    x="5"
+    y="54">SAP</text>
+</svg>

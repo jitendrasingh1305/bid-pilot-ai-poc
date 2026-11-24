@@ -1,0 +1,128 @@
+/* ── Dashboard shell ─────────────────────────────────────────── */
+.dashPage { background: #f5f6fa; }
+.dashPageWrapper { background: #f5f6fa; }
+.dashScroll { background: #f5f6fa; }
+.dashHeader {
+  background: #1a1a2e !important;
+  border-bottom: 2px solid #e94560 !important;
+  min-height: 3.5rem !important;
+}
+.dashHeader .sapMTitle { color: #fff !important; }
+.dashTitle { color: #e94560 !important; font-weight: 700 !important; }
+.dashSubtitle { color: #a0a0c0; font-size: 0.875rem; line-height: 2.2; }
+.jouleBtn .sapMBtnInner { color: #a0c0ff !important; border-color: #0f3460 !important; }
+.dashBody { padding: 1.25rem; gap: 1.25rem; }
+/* SAP Logo image */
+.sapLogoImg { margin-right: 0.9rem; flex-shrink: 0; display: block !important; }
+
+/* ── KPI tiles ───────────────────────────────────────────────── */
+.kpiGrid { padding: 0; }
+.kpiTile {
+  border-radius: 10px !important;
+  min-height: 110px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.kpiTile:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12) !important; }
+.kpiTotal   { background: linear-gradient(135deg, #1a1a2e, #0f3460) !important; }
+.kpiReceived { background: linear-gradient(135deg, #2c3e50, #3498db) !important; }
+.kpiProgress { background: linear-gradient(135deg, #7f4e00, #f39c12) !important; }
+.kpiReview  { background: linear-gradient(135deg, #1a4d6e, #2980b9) !important; }
+.kpiDone    { background: linear-gradient(135deg, #1a4d2e, #27ae60) !important; }
+.kpiPublished { background: linear-gradient(135deg, #2d1b6e, #7c3aed) !important; }
+.kpiContent { padding: 1rem; height: 100%; }
+/* KPI number as plain Text — crisp at any size */
+.kpiNum { font-size: 2rem !important; font-weight: 700 !important; color: #fff !important; line-height: 1.1 !important; font-family: "72","72full",Arial,sans-serif !important; }
+.kpiNumWarning  { color: #ffd54f !important; }
+.kpiNumInfo     { color: #81d4fa !important; }
+.kpiNumSuccess  { color: #a5d6a7 !important; }
+.kpiNumPublished{ color: #c4b5fd !important; }
+.kpiLabel { color: rgba(255,255,255,0.8) !important; font-size: 0.8rem !important; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.kpiIcon { font-size: 1.5rem !important; color: rgba(255,255,255,0.4) !important; margin-top: 0.4rem; }
+
+/* ── Filter bar ──────────────────────────────────────────────── */
+.filterBar { gap: 1rem; padding: 0.25rem 0; flex-wrap: wrap; }
+.filterLabel { font-weight: 600; color: #555; }
+.statusFilter { }
+.searchBox { margin-left: auto; }
+
+/* ── Bid cards ───────────────────────────────────────────────── */
+.bidGrid { padding: 0; }
+.bidCard {
+  border-radius: 10px !important;
+  background: #fff !important;
+  border: 1px solid #e0e4f0 !important;
+  transition: box-shadow 0.15s, transform 0.15s;
+  cursor: pointer;
+}
+.bidCard:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important; transform: translateY(-1px); }
+.bidCardBody { padding: 1rem; gap: 0.6rem; }
+.cardHeader { margin-bottom: 0.25rem; }
+.cardId .sapMObjectIdentifierTitle { font-size: 1rem !important; font-weight: 700 !important; color: #1a1a2e !important; }
+.cardId .sapMObjectIdentifierText { color: #666 !important; font-size: 0.8rem !important; }
+.statusBadge { font-size: 0.75rem !important; }
+.cardMeta { gap: 0.4rem; }
+.metaIcon { color: #9e9eb8; font-size: 0.85rem !important; }
+.metaText { color: #555; font-size: 0.85rem; }
+.metaLabel { color: #888; font-size: 0.8rem; }
+.matchScore .sapMObjectNumberText { font-size: 0.95rem !important; }
+
+/* Progress stepper on card */
+.progressStepper { gap: 0.2rem; margin-top: 0.5rem; }
+.stepActive { background: #e94560; border-radius: 50%; width: 28px; height: 28px; justify-content: center; }
+.stepActive .stepNum { color: #fff !important; font-size: 0.75rem !important; font-weight: 700 !important; line-height: 28px; }
+.stepDone { background: #27ae60; border-radius: 50%; width: 28px; height: 28px; justify-content: center; }
+.stepDone .stepNum { color: #fff !important; font-size: 0.75rem !important; font-weight: 700 !important; line-height: 28px; }
+.stepPublished { background: #7c3aed !important; }
+.stepFuture { background: #e0e4f0; border-radius: 50%; width: 28px; height: 28px; justify-content: center; }
+.stepFuture .stepNum { color: #aaa !important; font-size: 0.75rem !important; line-height: 28px; }
+.stepLabel { font-size: 0.65rem !important; color: #888 !important; margin-top: 0.1rem; }
+.stepArrow { color: #ccc; font-size: 1rem; line-height: 28px; }
+.cardFooter { margin-top: 0.5rem; border-top: 1px solid #f0f0f8; padding-top: 0.5rem; }
+.cardDate { color: #aaa; font-size: 0.75rem; }
+
+/* ── Detail page ─────────────────────────────────────────────── */
+.detailPage { background: #f5f6fa; }
+.detailBody { padding: 1.25rem; gap: 1rem; }
+.detailPanel {
+  border-radius: 8px !important;
+  border: 1px solid #e0e4f0 !important;
+  background: #fff !important;
+}
+.detailPanel .sapMPanelHdr { background: #f8f9ff !important; border-bottom: 1px solid #e0e4f0 !important; font-weight: 600 !important; }
+.overviewGrid { padding: 1rem; }
+.fieldGroup { gap: 0.2rem; }
+.fieldGroup .sapMLabel { color: #888; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.fieldValue { font-weight: 600; color: #333; }
+.reqTextBox { padding: 0 1rem 1rem; }
+.reqText .sapMTextArea { background: #f8f9ff !important; border-color: #e0e4f0 !important; }
+
+/* Lifecycle bar */
+.lifecycleBar { padding: 1.25rem; gap: 0.5rem; flex-wrap: wrap; }
+.lcStepDone  { background: #27ae60; border-radius: 50%; width: 36px; height: 36px; justify-content: center; }
+.lcStepActive{ background: #e94560; border-radius: 50%; width: 36px; height: 36px; justify-content: center; box-shadow: 0 0 0 4px rgba(233,69,96,0.2); }
+.lcStepFuture{ background: #e0e4f0; border-radius: 50%; width: 36px; height: 36px; justify-content: center; }
+.lcStepPublished { background: #7c3aed !important; box-shadow: 0 0 0 4px rgba(124,58,237,0.2) !important; }
+.lcStepDone .lcNum, .lcStepActive .lcNum { color: #fff !important; font-weight: 700 !important; line-height: 36px; font-size: 0.85rem !important; }
+.lcStepFuture .lcNum { color: #aaa !important; line-height: 36px; font-size: 0.85rem !important; }
+.lcLabel { font-size: 0.7rem !important; color: #666 !important; margin-top: 0.3rem; white-space: nowrap; }
+.lcLine { color: #d0d4e8; font-size: 1.2rem; line-height: 36px; }
+.actionBar { padding: 0.75rem 1rem; gap: 0.75rem; flex-wrap: wrap; }
+
+/* Dept reviews */
+.reviewRow { padding: 0.75rem 1rem; gap: 1rem; }
+.deptIcon { font-size: 1.3rem !important; color: #9e9eb8; margin-right: 0.75rem; flex-shrink: 0; }
+.deptName { font-weight: 600; color: #333; }
+.deptComments { color: #888; font-size: 0.8rem; }
+.reviewBtn { margin-left: 0.25rem; }
+
+/* Bid doc sections */
+.docSection { padding: 1rem; border-bottom: 1px solid #f0f0f8; gap: 0.5rem; }
+.docSection:last-child { border-bottom: none; }
+.secTitle { color: #0f3460 !important; }
+.docText .sapMTextArea { background: #f8f9ff !important; border-color: #e0e4f0 !important; font-family: monospace; font-size: 0.8rem; }
+.costRow { gap: 0.75rem; margin-top: 0.5rem; }
+.costNum .sapMObjectNumberText { font-size: 1.3rem !important; font-weight: 700 !important; color: #0f3460 !important; }
+
+/* Notifications table */
+.notifTable { padding: 0 0.5rem; }

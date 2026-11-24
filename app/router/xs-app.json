@@ -1,0 +1,30 @@
+{
+  "authenticationMethod": "route",
+  "routes": [
+    {
+      "source": "^/bid-pilot/(.*)$",
+      "destination": "srv-api",
+      "target": "/bid-pilot/$1",
+      "authenticationType": "xsuaa",
+      "csrfProtection": false
+    },
+    {
+      "source": "^/joule-ui/(.*)$",
+      "target": "/joule-ui/$1",
+      "localDir": "../joule-ui/webapp",
+      "authenticationType": "xsuaa"
+    },
+    {
+      "source": "^/bid-dashboard/(.*)$",
+      "target": "/bid-dashboard/$1",
+      "localDir": "../bid-dashboard/webapp",
+      "authenticationType": "xsuaa"
+    },
+    {
+      "source": "^/(.*)$",
+      "target": "/bid-dashboard/$1",
+      "localDir": "../bid-dashboard/webapp",
+      "authenticationType": "xsuaa"
+    }
+  ]
+}

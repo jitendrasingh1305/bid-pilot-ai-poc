@@ -1,0 +1,18 @@
+{
+  "server": {
+    "port": 57446
+  },
+  "build": {
+    "target": "gen",
+    "tasks": [
+      { "for": "hana",   "src": "db",  "options": { "model": ["db"] } },
+      { "for": "nodejs", "src": "srv", "options": { "model": ["db","srv"] } }
+    ]
+  },
+  "fiori": {
+    "preview": true
+  },
+  "query": {
+    "limit": { "default": 100, "max": 1000 }
+  }
+}

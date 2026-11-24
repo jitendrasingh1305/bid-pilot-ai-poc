@@ -1,0 +1,49 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "bid.pilot.dashboard",
+    "type": "application",
+    "title": "BidPilot — Bid Dashboard",
+    "description": "Bid lifecycle management dashboard",
+    "applicationVersion": { "version": "1.0.0" }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": { "desktop": true, "tablet": true, "phone": false }
+  },
+  "sap.ui5": {
+    "rootView": {
+      "viewName": "bid.pilot.dashboard.view.App",
+      "type": "XML",
+      "id": "appView"
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "viewPath": "bid.pilot.dashboard.view",
+        "controlId": "appShell",
+        "controlAggregation": "pages",
+        "async": true
+      },
+      "routes": [
+        { "name": "dashboard", "pattern": "", "target": "dashboard" },
+        { "name": "bidDetail", "pattern": "bid/{bidId}", "target": "bidDetail" }
+      ],
+      "targets": {
+        "dashboard": { "viewName": "Dashboard" },
+        "bidDetail": { "viewName": "BidDetail" }
+      }
+    },
+    "models": {
+    },
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": { "sap.m": {}, "sap.ui.core": {}, "sap.f": {}, "sap.ui.layout": {} }
+    },
+    "resources": {
+      "css": [{ "uri": "css/style.css" }]
+    },
+    "contentDensities": { "compact": true, "cozy": true }
+  }
+}
